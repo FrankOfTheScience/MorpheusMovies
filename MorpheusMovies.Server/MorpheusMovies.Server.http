@@ -1,0 +1,6 @@
+@MorpheusMovies.Server_HostAddress = http://localhost:5012
+
+GET {{MorpheusMovies.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
