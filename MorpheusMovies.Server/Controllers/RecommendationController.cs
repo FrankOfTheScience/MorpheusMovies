@@ -1,23 +1,33 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.ML;
+using MorpheusMovies.Server.DTOs;
+using MorpheusMovies.Server.EF;
 using MorpheusMovies.Server.MLModel;
-using MorpheusMovies.Server.Models;
 
 namespace MorpheusMovies.Server.Controllers;
 
+[Authorize]
 [ApiController]
-[Route("[controller]")]
-public class RecommendationsController : ControllerBase
+[Route("api/[controller]")]
+public class RecommendationController : ControllerBase
 {
+    private readonly ApplicationDbContext _context;
     private readonly ITransformer _model;
+    private readonly MLContext _mLContext;
 
-    public RecommendationsController(ITransformer model)
-        => _model = model;
-
-    [HttpGet]
-    public ActionResult<ModelOutput> GetRecommendations([FromQuery] float userId, [FromQuery] float movieId)
+    public RecommendationController(ApplicationDbContext context, MLContext mlContext, ITransformer model)
     {
-        var prediction = ModelTraining.Predict(_model, userId, movieId);
-        return Ok(new ModelOutput { MovieId = movieId, Prediction = prediction });
+        _context = context;
+        _mLContext = mlContext;
+        _model = model;
+    }
+
+    [HttpPost]
+    public IActionResult GetRecommendations([FromBody] RecommendationRequest request)
+    {
+        var recomendation = ModelTraining.Predict(_mLContext, _model, request.UserId, request.MovieIds);
+
+        return Ok(new ReccomendationResponse { SuggestedMovies = recomendation });
     }
 }
