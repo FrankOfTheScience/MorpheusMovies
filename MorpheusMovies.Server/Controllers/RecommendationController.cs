@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.ML;
 using MorpheusMovies.Server.DTOs;
 using MorpheusMovies.Server.EF;
-using MorpheusMovies.Server.MLModel;
 
 namespace MorpheusMovies.Server.Controllers;
 
@@ -23,10 +22,12 @@ public class RecommendationController : ControllerBase
         _model = model;
     }
 
-    [HttpPost]
-    public IActionResult GetRecommendations([FromBody] RecommendationRequest request)
+    [HttpGet("userId:int")]
+    public IActionResult GetRecommendations(int userId)
     {
-        var recomendation = ModelTraining.Predict(_mLContext, _model, request.UserId, request.MovieIds);
+        //TODO: Implementare business layer, repository layer, interfaces
+        var user = _context.ApplicationUsers.Find(userId);
+        var recomendation = MLModel.ApplicationMLModel.Predict(_mLContext, _model, user);
 
         return Ok(new ReccomendationResponse { SuggestedMovies = recomendation });
     }
