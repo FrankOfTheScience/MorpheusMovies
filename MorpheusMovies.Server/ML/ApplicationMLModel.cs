@@ -93,10 +93,10 @@ public static class ApplicationMLModel
         return mlContext.Data.LoadFromEnumerable(ratingsData);
     }
 
-    public static List<int> Predict(MLContext mlContext, ITransformer model, ApplicationUser user)
+    public static List<MovieRatingPrediction> Predict(MLContext mlContext, ITransformer model, ApplicationUser user)
     {
         var predictionEngine = mlContext.Model.CreatePredictionEngine<MovieRating, MovieRatingPrediction>(model);
-        var recommendations = new List<int>();
+        var recommendations = new List<MovieRatingPrediction>();
 
         foreach (var movie in user.MoviePreferences)
         {
@@ -112,11 +112,10 @@ public static class ApplicationMLModel
             var prediction = predictionEngine.Predict(movieRating);
 
             if (prediction.Score > 3.5)
-                recommendations.Add(movie.MovieId);
+                recommendations.Add(prediction);
         }
 
         return recommendations;
     }
-
 }
 

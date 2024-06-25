@@ -2,6 +2,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.ML;
 using MorpheusMovies.Server.EF;
 using MorpheusMovies.Server.MLModel;
+using MorpheusMovies.Server.Repository;
+using MorpheusMovies.Server.Repository.Interfaces;
+using MorpheusMovies.Server.Services;
+using MorpheusMovies.Server.Services.Interfaces;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +24,11 @@ var trainingData = ApplicationMLModel.LoadTrainingData(mlContext, builder.Servic
 var model = ApplicationMLModel.TrainModel(mlContext, trainingData);
 
 builder.Services.AddSingleton(model);
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IMovieRepository, MovieRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddScoped<IReccomendationService, ReccomendationService>();
 
 var app = builder.Build();
 

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.ML;
-using MorpheusMovies.Server.DTOs;
 using MorpheusMovies.Server.EF;
 
 namespace MorpheusMovies.Server.Controllers;
@@ -25,10 +24,10 @@ public class RecommendationController : ControllerBase
     [HttpGet("userId:int")]
     public IActionResult GetRecommendations(int userId)
     {
-        //TODO: Implementare business layer, repository layer, interfaces
+        //TODO: Substitute with the Service yet to be completed
         var user = _context.ApplicationUsers.Find(userId);
         var recomendation = MLModel.ApplicationMLModel.Predict(_mLContext, _model, user);
 
-        return Ok(new ReccomendationResponse { SuggestedMovies = recomendation });
+        return Ok();
     }
 }
