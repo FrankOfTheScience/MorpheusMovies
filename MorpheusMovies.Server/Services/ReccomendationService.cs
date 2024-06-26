@@ -17,7 +17,7 @@ public class ReccomendationService : IReccomendationService
         _mLContext = mlContext;
     }
 
-    public async Task<ReccomendationResponse> GetReccomendationAsync(string email)
+    public async Task<ResponseBase> GetReccomendationAsync(string email)
     {
         var user = await _userRepository.GetByNameAsync(email);
         if (user == null)
@@ -25,6 +25,7 @@ public class ReccomendationService : IReccomendationService
 
         var reccomendation = MLModel.ApplicationMLModel.Predict(_mLContext, _model, user);
 
+        //TODO: Finish to implement
         throw new NotImplementedException();
     }
 }

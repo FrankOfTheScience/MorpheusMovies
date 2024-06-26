@@ -4,7 +4,7 @@ namespace MorpheusMovies.Server.Repository.Interfaces;
 
 public interface IUserRepository : IRepository<ApplicationUser>
 {
-    Task<bool> CreateAsync();
+    Task CreateAsync(ApplicationUser entity);
     Task<ApplicationUser> UpdateAsync(ApplicationUser entity);
-    Task<bool> DeleteAsync(int id);
+    Task DeleteAsync(int id);
 }

@@ -4,5 +4,5 @@ namespace MorpheusMovies.Server.Services.Interfaces;
 
 public interface IReccomendationService
 {
-    Task<ReccomendationResponse> GetReccomendationAsync(string email);
+    Task<ResponseBase> GetReccomendationAsync(string email);
 }
