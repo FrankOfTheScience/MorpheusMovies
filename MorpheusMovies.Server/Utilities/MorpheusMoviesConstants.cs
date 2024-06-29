@@ -29,7 +29,26 @@ public static class MorpheusMoviesConstants
         /// Case when entity has been created
         /// </summary>
         public const string ENTITY_DELETED = "Entity {0} has been successfully deleted";
-
+        /// <summary>
+        /// Case when user has not been found for the email provided
+        /// </summary>
+        public const string USER_NOT_FOUND = "No registered users were found with the email '{0}'";
+        /// <summary>
+        /// Case when wrong credential has been submitted
+        /// </summary>
+        public const string INVALID_CREDENTIALS = "CredentialS provided were not valid";
+        /// <summary>
+        /// Case when wrong credential has been submitted
+        /// </summary>
+        public const string SIGNIN_SUCCESS = "You have successfully signed-in!";
+        /// <summary>
+        /// Case when trying to signup but user already exists for the provided email
+        /// </summary>
+        public const string USER_ALREADY_EXISTS = "Another user already exists with the email '{0}'";
+        /// <summary>
+        /// Case when trying to signup but user already exists for the provided email
+        /// </summary>
+        public const string SIGNUP_SUCCESS = "You have successfully signed-up with the email '{0}' !";
         /// <summary>
         /// Cases when parameters are missing
         /// </summary>

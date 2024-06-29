@@ -15,6 +15,6 @@ public class ErrorResponseObject
     public ErrorResponseObject(string errorMessage, string errorCode = null)
     {
         ErrorMessage = errorMessage;
-        ErrorCode = errorCode;
+        ErrorCode = errorCode ?? "General Error";
     }
 }

@@ -13,18 +13,18 @@ public class UserService : IUserService
     public UserService(IUserRepository userRepository)
         => _userRepository = userRepository;
 
-    public async Task<ResponseBase> ChangePasswordAsync(string email, string password)
+    public async Task<ResponseBase> ChangePasswordAsync(string email, string newPassword)
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-                return new KoResponse(new ErrorResponseObject(string.Format(MorpheusMoviesConstants.ResponseConstants.PARAMETER_NOT_DEFINED, $"{nameof(email)}, {nameof(password)}")));
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(newPassword))
+                return new KoResponse(new ErrorResponseObject(string.Format(MorpheusMoviesConstants.ResponseConstants.PARAMETER_NOT_DEFINED, $"{nameof(email)}, {nameof(newPassword)}")));
 
             var user = await _userRepository.GetByNameAsync(email);
             if (user == null)
-                return new KoResponse(new ErrorResponseObject(string.Format(MorpheusMoviesConstants.ResponseConstants.PARAMETER_NOT_DEFINED, $"{nameof(email)}, {nameof(password)}")));
+                return new KoResponse(new ErrorResponseObject(string.Format(MorpheusMoviesConstants.ResponseConstants.PARAMETER_NOT_DEFINED, $"{nameof(email)}, {nameof(newPassword)}")));
 
-            user.Password = BCrypt.Net.BCrypt.HashPassword(password);
+            user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
             await _userRepository.UpdateAsync(user);
 
             return new OkResponse<GeneralOkResponse>(new GeneralOkResponse(string.Format(MorpheusMoviesConstants.ResponseConstants.PASSWORD_UPDATED, email)));
@@ -129,7 +129,17 @@ public class UserService : IUserService
     {
         try
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                return new KoResponse(new ErrorResponseObject(string.Format(MorpheusMoviesConstants.ResponseConstants.PARAMETER_NOT_DEFINED, $"{nameof(email)}, {nameof(password)}")));
+
+            var user = await _userRepository.GetByNameAsync(email);
+            if (user == null)
+                return new KoResponse(new ErrorResponseObject(string.Format(MorpheusMoviesConstants.ResponseConstants.USER_NOT_FOUND, email)));
+
+            if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
+                return new KoResponse(new ErrorResponseObject(MorpheusMoviesConstants.ResponseConstants.INVALID_CREDENTIALS));
+
+            return new OkResponse<GeneralOkResponse>(new GeneralOkResponse(string.Format(MorpheusMoviesConstants.ResponseConstants.SIGNIN_SUCCESS, email)));
         }
         catch (Exception e)
         {
@@ -142,7 +152,17 @@ public class UserService : IUserService
     {
         try
         {
-            throw new NotImplementedException();
+            if (newUser == null || string.IsNullOrWhiteSpace(newUser.Email) || string.IsNullOrWhiteSpace(newUser.Password))
+                return new KoResponse(new ErrorResponseObject(string.Format(MorpheusMoviesConstants.ResponseConstants.PARAMETER_NOT_DEFINED, $"{nameof(newUser.Email)}, {nameof(newUser.Password)}")));
+
+            var existingUser = await _userRepository.GetByNameAsync(newUser.Email);
+            if (existingUser != null)
+                return new KoResponse(new ErrorResponseObject(string.Format(MorpheusMoviesConstants.ResponseConstants.USER_ALREADY_EXISTS, newUser.Email)));
+
+            newUser.Password = BCrypt.Net.BCrypt.HashPassword(newUser.Password);
+            await _userRepository.CreateAsync(newUser);
+
+            return new OkResponse<GeneralOkResponse>(new GeneralOkResponse(string.Format(MorpheusMoviesConstants.ResponseConstants.SIGNUP_SUCCESS, newUser.Email)));
         }
         catch (Exception e)
         {
