@@ -1,5 +1,5 @@
 ﻿using Microsoft.ML;
-using MorpheusMovies.Server.DTOs;
+using MorpheusMovies.Server.ML.Model;
 using MorpheusMovies.Server.Repository.Interfaces;
 using MorpheusMovies.Server.Services.Interfaces;
 
@@ -17,7 +17,7 @@ public class ReccomendationService : IReccomendationService
         _mLContext = mlContext;
     }
 
-    public async Task<ResponseBase> GetReccomendationAsync(string email)
+    public async Task<MovieRatingPrediction> GetReccomendationAsync(string email)
     {
         var user = await _userRepository.GetByNameAsync(email);
         if (user == null)

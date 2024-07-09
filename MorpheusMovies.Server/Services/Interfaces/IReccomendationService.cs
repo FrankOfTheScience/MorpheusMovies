@@ -1,8 +1,8 @@
-﻿using MorpheusMovies.Server.DTOs;
+﻿using MorpheusMovies.Server.ML.Model;
 
 namespace MorpheusMovies.Server.Services.Interfaces;
 
 public interface IReccomendationService
 {
-    Task<ResponseBase> GetReccomendationAsync(string email);
+    Task<MovieRatingPrediction> GetReccomendationAsync(string email);
 }

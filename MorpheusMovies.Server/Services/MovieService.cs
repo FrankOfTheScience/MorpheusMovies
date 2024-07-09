@@ -1,4 +1,5 @@
-﻿using MorpheusMovies.Server.DTOs;
+﻿using MorpheusMovies.Server.CustomException;
+using MorpheusMovies.Server.DTOs;
 using MorpheusMovies.Server.EF.Model;
 using MorpheusMovies.Server.Repository.Interfaces;
 using MorpheusMovies.Server.Services.Interfaces;
@@ -12,51 +13,48 @@ public class MovieService : IMovieService
     public MovieService(IMovieRepository movieRepository)
         => _movieRepository = movieRepository;
 
-    public async Task<ResponseBase> RetrieveAllMoviesAsync()
+    public async Task<IEnumerable<Movie>> RetrieveAllMoviesAsync()
     {
         try
         {
-            var records = await _movieRepository.GetAllAsync();
-            return new OkResponse<IEnumerable<Movie>>(records);
+            return await _movieRepository.GetAllAsync();
         }
         catch (Exception e)
         {
             Console.WriteLine($"Error accessing data in {nameof(RetrieveAllMoviesAsync)}: {e.Message}");
-            throw;
+            throw new ErrorInfoException(new ErrorResponseObject(MorpheusMoviesConstants.ResponseConstants.GENERAL_ERROR, MorpheusMoviesConstants.ResponseConstants.SERVER_ERROR_CODE), e.Message, e);
         }
     }
 
-    public async Task<ResponseBase> RetrieveMovieByIdAsync(int id)
+    public async Task<Movie> RetrieveMovieByIdAsync(int id)
     {
         try
         {
             if (id <= 0)
-                return new KoResponse(new ErrorResponseObject(string.Format(MorpheusMoviesConstants.ResponseConstants.PARAMETER_NOT_VALID, nameof(id))));
+                throw new ErrorInfoException(new ErrorResponseObject(string.Format(MorpheusMoviesConstants.ResponseConstants.PARAMETER_NOT_VALID, nameof(id)), MorpheusMoviesConstants.ResponseConstants.CLIENT_ERROR_CODE));
 
-            var record = await _movieRepository.GetByIdAsync(id);
-            return new OkResponse<Movie>(record);
+            return await _movieRepository.GetByIdAsync(id);
         }
         catch (Exception e)
         {
             Console.WriteLine($"Error accessing data in {nameof(RetrieveMovieByIdAsync)}: {e.Message}");
-            throw;
+            throw new ErrorInfoException(new ErrorResponseObject(MorpheusMoviesConstants.ResponseConstants.GENERAL_ERROR, MorpheusMoviesConstants.ResponseConstants.SERVER_ERROR_CODE)), e.Message, e);
         }
     }
 
-    public async Task<ResponseBase> RetrieveMovieByNameAsync(string name)
+    public async Task<Movie> RetrieveMovieByNameAsync(string name)
     {
         try
         {
             if (string.IsNullOrWhiteSpace(name))
-                return new KoResponse(new ErrorResponseObject(string.Format(MorpheusMoviesConstants.ResponseConstants.PARAMETER_NOT_DEFINED, nameof(name))));
+                throw new ErrorInfoException(new ErrorResponseObject(string.Format(MorpheusMoviesConstants.ResponseConstants.PARAMETER_NOT_DEFINED, nameof(name)), MorpheusMoviesConstants.ResponseConstants.CLIENT_ERROR_CODE));
 
-            var record = await _movieRepository.GetByNameAsync(name);
-            return new OkResponse<Movie>(record);
+            return await _movieRepository.GetByNameAsync(name);
         }
         catch (Exception e)
         {
             Console.WriteLine($"Error accessing data in {nameof(RetrieveMovieByNameAsync)}: {e.Message}");
-            throw;
+            throw new ErrorInfoException(new ErrorResponseObject(MorpheusMoviesConstants.ResponseConstants.GENERAL_ERROR, MorpheusMoviesConstants.ResponseConstants.SERVER_ERROR_CODE), e.Message, e);
         }
     }
 }

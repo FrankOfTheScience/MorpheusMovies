@@ -1,10 +1,10 @@
-﻿using MorpheusMovies.Server.DTOs;
+﻿using MorpheusMovies.Server.EF.Model;
 
 namespace MorpheusMovies.Server.Services.Interfaces;
 
 public interface IMovieService
 {
-    Task<ResponseBase> RetrieveAllMoviesAsync();
-    Task<ResponseBase> RetrieveMovieByIdAsync(int id);
-    Task<ResponseBase> RetrieveMovieByNameAsync(string name);
+    Task<IEnumerable<Movie>> RetrieveAllMoviesAsync();
+    Task<Movie> RetrieveMovieByIdAsync(int id);
+    Task<Movie> RetrieveMovieByNameAsync(string name);
 }

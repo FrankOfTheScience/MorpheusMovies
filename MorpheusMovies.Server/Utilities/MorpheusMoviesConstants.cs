@@ -13,6 +13,11 @@ public static class MorpheusMoviesConstants
         public const string STATUS_OK = "OK";
         public const string STATUS_KO = "KO";
 
+        public const string AUTH_ERROR_CODE = "001";
+        public const string CLIENT_ERROR_CODE = "002";
+        public const string SERVER_ERROR_CODE = "003";
+        public const string TRANSIENT_ERROR_CODE = "004";
+
         /// <summary>
         /// Case when password is updated
         /// </summary>
@@ -30,9 +35,13 @@ public static class MorpheusMoviesConstants
         /// </summary>
         public const string ENTITY_DELETED = "Entity {0} has been successfully deleted";
         /// <summary>
+        /// Case when user has not been found for the id provided
+        /// </summary>
+        public const string USER_NOT_FOUND_BY_ID = "No registered users were found with the id '{0}'";
+        /// <summary>
         /// Case when user has not been found for the email provided
         /// </summary>
-        public const string USER_NOT_FOUND = "No registered users were found with the email '{0}'";
+        public const string USER_NOT_FOUND_BY_EMAIL = "No registered users were found with the email '{0}'";
         /// <summary>
         /// Case when wrong credential has been submitted
         /// </summary>
@@ -61,5 +70,9 @@ public static class MorpheusMoviesConstants
         /// Cases when entity is not found
         /// </summary>
         public const string ENTITY_NOT_FOUND_FOR_THE_OPERATION = "The entity {0} for the {1} operation was not found";
+        /// <summary>
+        /// Cases when internal server error message must be thrown
+        /// </summary>
+        public const string GENERAL_ERROR = "An unexpected error has verified, please try again in a while";
     }
 }
