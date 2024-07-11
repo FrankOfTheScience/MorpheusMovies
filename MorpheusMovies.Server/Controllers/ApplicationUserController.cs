@@ -17,6 +17,7 @@ public class ApplicationUserController : ControllerBase
     public ApplicationUserController(IUserService userService)
         => _userService = userService;
 
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetApplicationUsers()
     {
@@ -29,12 +30,14 @@ public class ApplicationUserController : ControllerBase
         {
             return ApiUtilities.GenerateKoResponse(e.ErrorResponse);
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
+            Console.WriteLine($"Unexpected error in {nameof(ApplicationUserController)}: {e.Message}");
             return new InternalServerErrorObjectResult(new ErrorResponseObject(MorpheusMoviesConstants.ResponseConstants.GENERAL_ERROR, MorpheusMoviesConstants.ResponseConstants.SERVER_ERROR_CODE));
         }
     }
 
+    [Authorize]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetApplicationUserById(int id)
     {
@@ -51,10 +54,12 @@ public class ApplicationUserController : ControllerBase
         }
         catch (Exception e)
         {
+            Console.WriteLine($"Unexpected error in {nameof(ApplicationUserController)}: {e.Message}");
             return new InternalServerErrorObjectResult(new ErrorResponseObject(MorpheusMoviesConstants.ResponseConstants.GENERAL_ERROR, MorpheusMoviesConstants.ResponseConstants.SERVER_ERROR_CODE));
         }
     }
 
+    [Authorize]
     [HttpGet("email")]
     public async Task<IActionResult> GetApplicationUserByEmail([FromQuery] string email)
     {
@@ -69,43 +74,51 @@ public class ApplicationUserController : ControllerBase
         {
             return ApiUtilities.GenerateKoResponse(e.ErrorResponse);
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
+            Console.WriteLine($"Unexpected error in {nameof(ApplicationUserController)}: {e.Message}");
             return new InternalServerErrorObjectResult(new ErrorResponseObject(MorpheusMoviesConstants.ResponseConstants.GENERAL_ERROR, MorpheusMoviesConstants.ResponseConstants.SERVER_ERROR_CODE));
         }
     }
 
+    [Authorize]
     [HttpPut]
     public async Task<IActionResult> EditUserProfile(ApplicationUser editedUser)
     {
         try
         {
             await _userService.EditUserProfileAsync(editedUser);
-            return Ok(new GeneralOkResponse("TODO CONSTANT"));
+            var user = _userService.GetApplicationUserByEmailAsync(editedUser.Email);
+            return Ok(new GeneralOkResponse(string.Format(MorpheusMoviesConstants.ResponseConstants.ENTITY_UPDATED, nameof(ApplicationUser)), user));
         }
         catch (ErrorInfoException e)
         {
             return ApiUtilities.GenerateKoResponse(e.ErrorResponse);
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
+            Console.WriteLine($"Unexpected error in {nameof(ApplicationUserController)}: {e.Message}");
             return new InternalServerErrorObjectResult(new ErrorResponseObject(MorpheusMoviesConstants.ResponseConstants.GENERAL_ERROR, MorpheusMoviesConstants.ResponseConstants.SERVER_ERROR_CODE));
         }
     }
+
+    [Authorize]
     [HttpDelete("{email}")]
     public async Task<IActionResult> DeleteUserProfile(string email)
     {
         try
         {
             await _userService.DeleteUserProfileAsync(email);
-            return Ok(new GeneralOkResponse("TODO CONSTANT"));
+            return Ok(new GeneralOkResponse(string.Format(MorpheusMoviesConstants.ResponseConstants.ENTITY_DELETED, nameof(ApplicationUser))));
+
         }
         catch (ErrorInfoException e)
         {
             return ApiUtilities.GenerateKoResponse(e.ErrorResponse);
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
+            Console.WriteLine($"Unexpected error in {nameof(ApplicationUserController)}: {e.Message}");
             return new InternalServerErrorObjectResult(new ErrorResponseObject(MorpheusMoviesConstants.ResponseConstants.GENERAL_ERROR, MorpheusMoviesConstants.ResponseConstants.SERVER_ERROR_CODE));
         }
     }
@@ -116,14 +129,15 @@ public class ApplicationUserController : ControllerBase
         try
         {
             await _userService.SignUp(newUser);
-            return Ok(new GeneralOkResponse("TODO CONSTANT"));
+            return Ok(new GeneralOkResponse(string.Format(MorpheusMoviesConstants.ResponseConstants.ENTITY_CREATED, nameof(ApplicationUser)), newUser));
         }
         catch (ErrorInfoException e)
         {
             return ApiUtilities.GenerateKoResponse(e.ErrorResponse);
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
+            Console.WriteLine($"Unexpected error in {nameof(ApplicationUserController)}: {e.Message}");
             return new InternalServerErrorObjectResult(new ErrorResponseObject(MorpheusMoviesConstants.ResponseConstants.GENERAL_ERROR, MorpheusMoviesConstants.ResponseConstants.SERVER_ERROR_CODE));
         }
     }
@@ -134,14 +148,16 @@ public class ApplicationUserController : ControllerBase
         try
         {
             await _userService.SignIn(signInRequest.Email, signInRequest.Password);
-            return Ok(new GeneralOkResponse("TODO CONSTANT"));
+            var user = _userService.GetApplicationUserByEmailAsync(signInRequest.Email);
+            return Ok(new GeneralOkResponse(MorpheusMoviesConstants.ResponseConstants.SIGNIN_SUCCESS, user));
         }
         catch (ErrorInfoException e)
         {
             return ApiUtilities.GenerateKoResponse(e.ErrorResponse);
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
+            Console.WriteLine($"Unexpected error in {nameof(ApplicationUserController)}: {e.Message}");
             return new InternalServerErrorObjectResult(new ErrorResponseObject(MorpheusMoviesConstants.ResponseConstants.GENERAL_ERROR, MorpheusMoviesConstants.ResponseConstants.SERVER_ERROR_CODE));
         }
     }
@@ -152,15 +168,16 @@ public class ApplicationUserController : ControllerBase
         try
         {
             await _userService.ChangePasswordAsync(changePasswordRequest.Email, changePasswordRequest.NewPassword);
-            var updatedUser = await _userService.GetApplicationUserByEmailAsync(changePasswordRequest.Email);
-            return Ok(new OkResponse<ApplicationUser>(updatedUser));
+            var user = await _userService.GetApplicationUserByEmailAsync(changePasswordRequest.Email);
+            return Ok(new GeneralOkResponse(string.Format(MorpheusMoviesConstants.ResponseConstants.PASSWORD_UPDATED, user.Email), user));
         }
         catch (ErrorInfoException e)
         {
             return ApiUtilities.GenerateKoResponse(e.ErrorResponse);
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
+            Console.WriteLine($"Unexpected error in {nameof(ApplicationUserController)}: {e.Message}");
             return new InternalServerErrorObjectResult(new ErrorResponseObject(MorpheusMoviesConstants.ResponseConstants.GENERAL_ERROR, MorpheusMoviesConstants.ResponseConstants.SERVER_ERROR_CODE));
         }
     }

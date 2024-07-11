@@ -74,5 +74,13 @@ public static class MorpheusMoviesConstants
         /// Cases when internal server error message must be thrown
         /// </summary>
         public const string GENERAL_ERROR = "An unexpected error has verified, please try again in a while";
+        /// <summary>
+        /// Case when user has not been found for the id provided
+        /// </summary>
+        public const string MOVIE_NOT_FOUND_BY_ID = "No movies were found with the id '{0}'";
+        /// <summary>
+        /// Case when user has not been found for the email provided
+        /// </summary>
+        public const string MOVIE_NOT_FOUND_BY_NAME = "No movies were found named '{0}'";
     }
 }
