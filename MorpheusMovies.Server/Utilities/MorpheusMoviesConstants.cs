@@ -82,5 +82,9 @@ public static class MorpheusMoviesConstants
         /// Case when user has not been found for the email provided
         /// </summary>
         public const string MOVIE_NOT_FOUND_BY_NAME = "No movies were found named '{0}'";
+        /// <summary>
+        /// Case when request body is null
+        /// </summary>
+        public const string BODY_IS_NULL = "Request body cannot be null";
     }
 }
