@@ -90,7 +90,7 @@ public class MovieController : ControllerBase
             if (newMovie is null)
                 return BadRequest(new KoResponse(new ErrorResponseObject(MorpheusMoviesConstants.ResponseConstants.BODY_IS_NULL)));
             var movie = await _movieService.CreateMovieAsync(newMovie);
-            return Ok(new OkResponse<Movie>(movie));
+            return Ok(new GeneralOkResponse(MorpheusMoviesConstants.ResponseConstants.ENTITY_CREATED, movie));
         }
         catch (ErrorInfoException e)
         {
@@ -113,7 +113,7 @@ public class MovieController : ControllerBase
             if (movie is null)
                 return NotFound(new KoResponse(new ErrorResponseObject(string.Format(MorpheusMoviesConstants.ResponseConstants.MOVIE_NOT_FOUND_BY_ID), id.ToString())));
             await this._movieService.DeleteMovieAsync(id);
-            return Ok();
+            return Ok(new GeneralOkResponse(MorpheusMoviesConstants.ResponseConstants.ENTITY_DELETED));
         }
         catch (ErrorInfoException e)
         {
@@ -135,7 +135,8 @@ public class MovieController : ControllerBase
             var movie = this.GetMovieByName(movieToUpdate.Title);
             if (movie is null)
                 return NotFound(new KoResponse(new ErrorResponseObject(string.Format(MorpheusMoviesConstants.ResponseConstants.MOVIE_NOT_FOUND_BY_NAME), movieToUpdate.Title)));
-            return Ok(await this._movieService.UpdateMovieAsync(movieToUpdate));
+            await this._movieService.UpdateMovieAsync(movieToUpdate);
+            return Ok(new GeneralOkResponse(MorpheusMoviesConstants.ResponseConstants.ENTITY_UPDATED));
         }
         catch (ErrorInfoException e)
         {

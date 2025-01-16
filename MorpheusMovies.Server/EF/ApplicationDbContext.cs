@@ -29,7 +29,22 @@ public class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<Rating>()
+            .HasOne(r => r.Movie)
+            .WithMany(m => m.Ratings)
+            .HasForeignKey(r => r.MovieId);
 
+        modelBuilder.Entity<UserMoviePreference>()
+            .HasOne(ump => ump.Movie)
+            .WithMany(m => m.UserPreferences)
+            .HasForeignKey(ump => ump.MovieId);
+
+        modelBuilder.Entity<UserMoviePreference>()
+            .HasOne(ump => ump.User)
+            .WithMany(u => u.MoviePreferences)
+            .HasForeignKey(ump => ump.UserId);
+
+        // Data seeding 
         var dataPath = Path.Combine(AppContext.BaseDirectory, "Data");
 
         var movies = DataSeeder.LoadMoviesFromCsv(Path.Combine(dataPath, "movie-data.csv"));

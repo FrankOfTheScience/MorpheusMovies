@@ -31,6 +31,7 @@ public class Movie
     public bool War { get; set; }
     public bool Western { get; set; }
     public virtual IEnumerable<Rating> Ratings { get; set; } = new List<Rating>();
+    public virtual IEnumerable<UserMoviePreference> UserPreferences { get; set; } = new List<UserMoviePreference>();
 }
 
 public enum Genre

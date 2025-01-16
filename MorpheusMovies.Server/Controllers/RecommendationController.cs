@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.ML;
 using MorpheusMovies.Server.EF;
 
@@ -24,10 +25,30 @@ public class RecommendationController : ControllerBase
     [HttpGet("userId:int")]
     public IActionResult GetRecommendations(int userId)
     {
-        //TODO: Substitute with the Service yet to be completed
-        var user = _context.ApplicationUsers.Find(userId);
+        // 1. Recupera l'utente dal contesto
+        var user = _context.ApplicationUsers
+            .Include(u => u.MoviePreferences) // Assumendo che ci sia una relazione con le preferenze
+            .FirstOrDefault(u => u.UserId == userId);
+
+        if (user == null)
+            return NotFound($"User with ID {userId} not found");
+
+        // 2. Verifica se ci sono preferenze
+        var preferences = user.MoviePreferences.Select(p => p.MovieId).ToList();
+        if (!preferences.Any())
+            return BadRequest("User has no preferences to base recommendations on");
+
         var recomendation = MLModel.ApplicationMLModel.Predict(_mLContext, _model, user);
 
-        return Ok();
+        // 3. Passa i dati al modello di ML
+        var inputData = new MLModel.ModelInput
+        {
+            MovieIds = preferences // Supponendo che il modello supporti un array di ID film
+        };
+
+        var recommendations = MLModel.ApplicationMLModel.Predict(_mLContext, _model, inputData);
+
+        // 4. Restituisci le raccomandazioni
+        return Ok(recommendations);
     }
 }
